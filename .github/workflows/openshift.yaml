@@ -1,0 +1,60 @@
+name: OpenShift CI
+
+env:
+  OPENSHIFT_ADMIN_URL: ${{ secrets.OPENSHIFT_ADMIN_URL }}
+  OPENSHIFT_ADMIN_TOKEN: ${{ secrets.OPENSHIFT_ADMIN_TOKEN }}
+  OPENSHIFT_NAMESPACE: ${{ secrets.OPENSHIFT_NAMESPACE }}
+  
+on:
+  pull_request:
+    branches:
+    - main
+  workflow_dispatch:
+
+jobs:
+  install:
+    runs-on: ubuntu-20.04
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: redhat-actions/openshift-tools-installer@v1.1
+        id: install_clients
+        with:
+          helm: "3"
+          oc: "4"
+      - name: Run some executables
+        shell: bash
+        run: |
+          set -x
+          helm version
+          oc version
+      - name: Login to OpenShift DevSandbox
+        shell: bash
+        run: |
+          oc login --token=${OPENSHIFT_ADMIN_TOKEN} --server=${OPENSHIFT_ADMIN_URL}
+          oc project ${OPENSHIFT_NAMESPACE}
+      - name: Update wildfly chart dependencies
+        shell: bash
+        run: |
+          helm dep up ./charts/wildfly
+      - name: Install the microprofile-config S2I example
+        shell: bash
+        run: |
+          cd examples/microprofile-config/
+          APP=app-s2i-$(openssl rand -hex 4) YAML_FILE=./microprofile-config-app-s2i.yaml ./ci-test.sh
+      - name: Install the microprofile-config Bootable Jar example
+        if: always()
+        shell: bash
+        run: |
+          cd examples/microprofile-config/
+          APP=app-bootable-jar-$(openssl rand -hex 4) YAML_FILE=./microprofile-config-app.yaml ./ci-test.sh
+      - name: Clean up all resources
+        if: always()
+        shell: bash
+        run: |
+          # Delete all resources created by the wildfly chart
+          oc delete all -l app.kubernetes.io/name=wildfly
+
+          
+          
