@@ -1,0 +1,82 @@
+{{- define "wildfly-common.podtemplate" -}}
+metadata:
+  name: {{ include "wildfly-common.appName" . }}
+  labels: {}
+  annotations:
+  {{- if .Values.deploy.annotations }}
+    {{- tpl (toYaml .Values.deploy.annotations) . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.deploy.initContainers }}
+  initContainers:
+    {{- tpl (toYaml .Values.deploy.initContainers) . | nindent 4 }}
+  {{- end }}
+  {{- include "wildfly-common.deployment.imagePullSecrets" . | nindent 2 -}}
+  containers:
+    - name: {{ include "wildfly-common.appName" . }}
+      image: {{ include "wildfly-common.appImage" . }}
+      imagePullPolicy: Always
+      ports:
+      - name: jolokia
+        containerPort: 8778
+        protocol: TCP
+      - name: http
+        containerPort: 8080
+        protocol: TCP
+      - name: ping
+        containerPort: 8888
+        protocol: TCP
+      {{- if .Values.deploy.tls.enabled }}
+      - name: https
+        containerPort: 8443
+        protocol: TCP
+      {{- end }}
+      - name: admin
+        containerPort: 9990
+        protocol: TCP
+      {{- if .Values.deploy.resources }}
+      resources:
+        {{- toYaml .Values.deploy.resources | nindent 8 }}
+      {{- end }}
+      {{- if .Values.deploy.livenessProbe }}
+      livenessProbe:
+        {{- tpl (toYaml .Values.deploy.livenessProbe) . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.deploy.readinessProbe }}
+      readinessProbe:
+        {{- tpl (toYaml .Values.deploy.readinessProbe) . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.deploy.startupProbe }}
+      startupProbe:
+        {{- tpl (toYaml .Values.deploy.startupProbe) . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.deploy.volumeMounts }}
+      volumeMounts:
+        {{- tpl (toYaml .Values.deploy.volumeMounts) . | nindent 8 }}
+      {{- end }}
+      env:
+      - name: JGROUPS_PING_PROTOCOL
+        value: dns.DNS_PING
+      - name: OPENSHIFT_DNS_PING_SERVICE_PORT
+        value: '8888'
+      - name: ENABLE_GENERATE_DEFAULT_DATASOURCE
+        value: 'false'
+      - name: OPENSHIFT_DNS_PING_SERVICE_NAME
+        value: {{ include "wildfly-common.appName" . }}-ping
+      - name: ENV_FILES
+        value: /etc/extensions/*
+      {{- if .Values.deploy.env }}
+      {{- tpl (toYaml .Values.deploy.env) . | nindent 6 }}
+      {{- end }}
+      {{- if .Values.deploy.envFrom }}
+      envFrom:
+      {{- tpl (toYaml .Values.deploy.envFrom) . | nindent 6 }}
+      {{- end }}
+    {{- if .Values.deploy.extraContainers }}
+    {{- tpl (toYaml .Values.deploy.extraContainers) . | nindent 4 }}
+    {{- end }}
+  {{- if .Values.deploy.volumes }}
+  volumes:
+    {{- tpl (toYaml .Values.deploy.volumes) . | nindent 4 }}
+  {{- end }}
+{{ end }}
