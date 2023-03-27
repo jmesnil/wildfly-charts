@@ -159,3 +159,15 @@ This template needs 3 parameters in a list:
 {{- fail (printf $failMessage $secret) -}}
 {{- end }}
 {{- end }}
+
+{{/*
+Verify that the type of deployment for the application is correct.
+*/}}
+{{- define "wildfly-common.detect.deployment.type" -}}
+{{- if .Values.deploy.useDeployment -}}
+{{- else -}}
+  {{- if (not (.Capabilities.APIVersions.Has "wildfly.org/v1alpha1/WildFlyServer")) -}}
+    {{ fail  ("Can not install a (potentially) stateful application without the availability of the WildFlyServer custom resource definition" ) }}
+  {{- end -}}
+{{- end -}}
+{{- end -}}

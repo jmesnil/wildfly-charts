@@ -15,6 +15,7 @@ build:
   triggers: {}
 deploy:
   enabled: true
+  useDeployment: false
   replicas: 1
   tls: {}
   route:

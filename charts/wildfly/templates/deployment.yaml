@@ -1,4 +1,6 @@
-{{- if .Values.deploy.enabled }}
+{{- include "wildfly-common.detect.deployment.type" . }}
+
+{{- if (and .Values.deploy.enabled .Values.deploy.useDeployment)}}
 {{- include "wildfly-common.deployment" (list . "wildfly.deployment") -}}
 {{- end -}}
 
