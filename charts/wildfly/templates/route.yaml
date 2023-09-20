@@ -1,3 +1,6 @@
+{{- if (and .Values.deploy.route.enabled .Values.deploy.ingress.enabled) }}
+    {{ fail "You can't enable both 'route' and 'ingress', plese select only one." }}
+{{- end -}}
 {{- if (and .Values.deploy.enabled .Values.deploy.route.enabled) }}
 {{- include "wildfly-common.route" (list . "wildfly.metadata.labels") -}}
 {{- end -}}

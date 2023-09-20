@@ -504,6 +504,40 @@
                       "null"
                     ]
                 },
+                "ingress": {
+                    "description": "Ingress configuration",
+                    "type": "object",
+                    "properties": {
+                        "className": {
+                          "description": "Configure the `ingressClassName` which is the name of the IngressClass cluster resource. The associated IngressClass defines which controller will implement the resource. If not set the default `ingressClass` defined on the cluster is used.",
+                          "type": "string"
+                        },
+                        "enabled": {
+                            "description": "Determines if a `Ingress` configuration should be created",
+                            "default": false,
+                            "type": "boolean"
+                        },
+                        "host": {
+                          "description": "is an alias/DNS that is used as endpoint for inbound traffic.",
+                          "type": "string"
+                        },
+                        "tls": {
+                          "description": "TLS Configuration for Ingress",
+                          "type": "object",
+                          "properties": {
+                            "enabled" : {
+                              "description": "Determines if Ingress  should be TLS-encrypted. If set to `true`, Ingress will use the secure service to acess to the deployment.",
+                              "default": false,
+                              "type": "boolean"
+                            },
+                            "secret": {
+                              "description": "Name of the secret which contains the certificates to use for TLS.",
+                              "type": "string"
+                            }
+                          }
+                        }
+                    }
+                },
                 "route": {
                     "description": "Route configuration",
                     "type": "object",

@@ -1,0 +1,3 @@
+{{- if (and (not .Values.deploy.route.enabled) .Values.deploy.ingress.enabled) }}
+{{- include "wildfly-common.ingress" (list . "wildfly.metadata.labels") -}}
+{{- end -}}
