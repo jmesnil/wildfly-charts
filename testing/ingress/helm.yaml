@@ -1,0 +1,10 @@
+image:
+  name: localhost:5001/helloworld
+build:
+  enabled: false # Disable S2I build
+deploy:
+  route:
+    enabled: false # Disable OpenShift Route
+  ingress:
+    host: wildfly.local
+    enabled: true
