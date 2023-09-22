@@ -1,12 +1,6 @@
-./kind-with-registry-and-ingress-controller.sh
+kind create cluster \
+  --name chart-testing \
+  --config=./kind-config.yaml
 
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-
-echo Wait for the ingress ningx controller to be ready...
-
-sleep 20
-
-kubectl wait --namespace ingress-nginx \
-  --for=condition=ready pod \
-  --selector=app.kubernetes.io/component=controller \
-  --timeout=90s  
+./setup-image-registry.sh
+./setup-nginx-ingress-controller.sh
