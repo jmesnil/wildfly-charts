@@ -12,28 +12,34 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          submodules: recursive
 
       - name: Install Helm
         uses: azure/setup-helm@v3
         with:
           version: v3.12.1
 
+      - name: Setup BATS
+        uses: mig4/setup-bats@v1
+        with:
+          bats-version: 1.10.0
+
       - name: Create k8s Kind Cluster
         uses: helm/kind-action@v1.5.0
         with:
           node_image: "kindest/node:v1.27.3"
-          config: ./testing/kind-config.yaml
+          config: ./test/setup/kind-config.yaml
 
       - name: Setup Image registry
         run: |-
-          ./testing/setup-image-registry.sh
+          ./test/setup/setup-image-registry.sh
 
       - name: Setup Nginx Ingress Controller
         run: |-
-          ./testing/setup-nginx-ingress-controller.sh
+          ./test/setup/setup-nginx-ingress-controller.sh
 
-      - name: Run Ingress Tests
+      - name: Run Tests
         run: |-
-          cd testing/ingress
-          ./test.sh
+          cd test/bats
+          bats -r .
 
