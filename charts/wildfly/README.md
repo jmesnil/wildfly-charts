@@ -178,6 +178,12 @@ If the Helm chart is only used to build the application image, you can skip the 
 | `deploy.envFrom` | Freeform `envFrom` items | - | [Kubernetes documentation](https://kubernetes.io/docs/tasks/inject-data-application/define-environment-variable-container/).  These environment variables will be used when the application is _running_. If you need to specify environment variables when the application is built, use `build.envFrom` instead. |
 | `deploy.extraContainers` | Freeform extra `containers` items | - | [Kubernetes Documentation](https://kubernetes.io/docs/concepts/workloads/pods/#pod-templates) |
 | `deploy.imagePullSecrets` | Names of secrets to pull the application image from an private image registry | - | [Kubernetes Documentation](https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod) |
+| `deploy.ingress` | Configuration specific to the creation of a `Ingress` resource to expose the application | - | [Kubernetes Documentation](https://kubernetes.io/docs/concepts/services-networking/ingress/) |
+| `deploy.ingress.className` | Configure the `ingressClassName` which is the name of the IngressClass cluster resource. The associated IngressClass defines which controller will implement the resource. If not set the default `ingressClass` defined on the cluster is used.| |[Kubernetes Documentation](https://kubernetes.io/docs/concepts/services-networking/ingress/#default-ingress-class). |
+| `deploy.ingress.enabled` | Determines if a `Ingress` configuration should be created. | `false` | [Kubernetes Documentation](https://kubernetes.io/docs/concepts/services-networking/ingress/) |
+| `deploy.ingress.host` | `host` is an alias/DNS that is used as endpoint for inbound traffic. | - | [Kubernete Documentation](https://kubernetes.io/docs/concepts/services-networking/ingress/#the-ingress-resource) |
+| `deploy.ingress.tls.enabled` | Determines if Ingress  should be TLS-encrypted. If set to `true`, Ingress will use the secure service to acess to the deployment. | `false`| [Kubernetes Documentation](https://kubernetes.io/docs/concepts/services-networking/ingress/#tls) |
+| `deploy.ingress.tls.secret` | Name of the secret which contains the certificates to use for TLS. | - | [Kubernetes Documentation](https://kubernetes.io/docs/concepts/services-networking/ingress/#tls) |
 | `deploy.initContainers` | Freeform `initContainers` items | - | [Kubernetes Documentation](https://kubernetes.io/docs/concepts/workloads/pods/init-containers/) |
 | `deploy.labels` | Map of `string` labels that are applied to the deployment and its pod's `template` | - | [Kubernetes documentation](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/) |
 | `deploy.livenessProbe` | Freeform `livenessProbe` field. | HTTP Get on `<ip>:admin/health/live` | [Kubernetes documentation](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
@@ -191,6 +197,7 @@ If the Helm chart is only used to build the application image, you can skip the 
 | `deploy.route.tls.insecureEdgeTerminationPolicy` | Determines if insecure traffic should be redirected | `Redirect` | Allowed values: `Allow`, `Disable`, `Redirect` |
 | `deploy.route.tls.termination` | Determines the type of TLS termination to use | `edge`| Allowed values: `edge`, `reencrypt`, `passthrough` |
 | `deploy.startupProbe` | Freeform `startupProbe` field. | HTTP Get on `<ip>:admin/health/live` | [Kubernetes documentation](https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/) |
-| `deploy.tls.enabled` | Enables the creation of a secure service to access the application. If `true`, WildFly must be configured to enable HTTPS | `false`| |
+| `deploy.tls.enabled` | Enables the creation of a secure service to access the application. If `true`, WildFly must be configured to enable HTTPS | `false`| - |
 | `deploy.volumes` | Freeform `volumes` items| - | [Kubernetes Documentation](https://kubernetes.io/docs/concepts/storage/volumes/) |
 | `deploy.volumeMounts` | Freeform `volumeMounts` items| - | [Kubernetes Documentation](https://kubernetes.io/docs/concepts/storage/volumes/) |
+
