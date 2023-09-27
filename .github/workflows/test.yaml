@@ -38,6 +38,10 @@ jobs:
         run: |-
           ./test/setup/setup-nginx-ingress-controller.sh
 
+      - name: Modify /etc/hosts
+        run: |-
+           sudo echo "127.0.0.1 wildfly.local" | sudo tee -a /etc/hosts
+
       - name: Run Tests
         run: |-
           cd test/bats

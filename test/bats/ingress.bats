@@ -16,15 +16,13 @@ image:
 build:
   enabled: false # Disable S2I build
 deploy:
-  route:
-    enabled: false # Disable OpenShift Route
   ingress:
     host: wildfly.local
     enabled: true
 EOF
     sleep 5
 
-    run curl -v --no-progress-meter --resolve wildfly.local:80:127.0.0.1 http://wildfly.local/HelloWorld
+    run curl -v --no-progress-meter http://wildfly.local/HelloWorld
     assert_output --partial  "200 OK"
     assert_output --partial  "Hello World"
 }
@@ -41,8 +39,6 @@ image:
 build:
   enabled: false # Disable S2I build
 deploy:
-  route:
-    enabled: false # Disable OpenShift Route
   ingress:
     enabled: true
     host: wildfly.local
@@ -53,12 +49,12 @@ EOF
     sleep 5
 
     # test with HTTPS
-    run curl -v -k --no-progress-meter --resolve wildfly.local:443:127.0.0.1 https://wildfly.local/HelloWorld
+    run curl -v -k --no-progress-meter https://wildfly.local/HelloWorld
     assert_output --partial  "*  subject: CN=wildfly.local"
     assert_output --partial  "Hello World"
 
     # verify that HTTP is redirected to HTTPS
-    run curl -v --no-progress-meter --resolve wildfly.local:80:127.0.0.1 http://wildfly.local/HelloWorld
+    run curl -v --no-progress-meter http://wildfly.local/HelloWorld
     assert_output --partial "308 Permanent Redirect"
 
 }
