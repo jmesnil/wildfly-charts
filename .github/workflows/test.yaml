@@ -1,0 +1,49 @@
+name: Helm Chart Testing
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.12.1
+
+      - name: Setup BATS
+        uses: mig4/setup-bats@v1
+        with:
+          bats-version: 1.10.0
+
+      - name: Create k8s Kind Cluster
+        uses: helm/kind-action@v1.5.0
+        with:
+          node_image: "kindest/node:v1.27.3"
+          config: ./test/setup/kind-config.yaml
+
+      - name: Setup Image registry
+        run: |-
+          ./test/setup/setup-image-registry.sh
+
+      - name: Setup Nginx Ingress Controller
+        run: |-
+          ./test/setup/setup-nginx-ingress-controller.sh
+
+      - name: Modify /etc/hosts
+        run: |-
+           sudo echo "127.0.0.1 wildfly.local" | sudo tee -a /etc/hosts
+
+      - name: Run Tests
+        run: |-
+          cd test/bats
+          bats -r .
+
